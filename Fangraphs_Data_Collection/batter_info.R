@@ -14,6 +14,7 @@ for (year in 2021:2025) {
       endseason = year,
       qual = "0",
       team = team,
+      pos = "np",
       pageitems = "100"
     )
     
