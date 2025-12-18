@@ -8,7 +8,7 @@ all_batter_data <- list()
 # Notice: Retrieves all players (both qualified or unqualified)
 # Notice: The record for most players used by a single team in a season is 70
 for (year in 2021:2025) {
-  for (team in 1:5) {
+  for (team in 1:30) {
     batter_info <- fg_batter_leaders(
       startseason = year,
       endseason = year,
