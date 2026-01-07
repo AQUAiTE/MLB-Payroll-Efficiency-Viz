@@ -12,7 +12,7 @@ for (year in 2021:2025) {
     pitcher_info <- fg_pitcher_leaders(
       startseason = year,
       endseason = year,
-      qual = "0",
+      qual = "20",
       team = team,
       pageitems = "100"
     )
