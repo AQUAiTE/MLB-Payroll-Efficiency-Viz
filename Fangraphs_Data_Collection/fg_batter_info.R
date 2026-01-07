@@ -12,7 +12,7 @@ for (year in 2021:2025) {
     batter_info <- fg_batter_leaders(
       startseason = year,
       endseason = year,
-      qual = "0",
+      qual = "100",
       team = team,
       pos = "np",
       pageitems = "100"

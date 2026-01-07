@@ -70,14 +70,14 @@ WITH teams AS (
 SELECT team, ROW_NUMBER() OVER (ORDER BY team) AS row_num
 FROM teams;
 
-# The Athletics did, we standardize to ATH
+# The Athletics did, we standardize to OAK since they were mostly OAK from 2021-2025
 UPDATE fg_batter_data_staging
-SET team = 'ATH'
-WHERE team = 'OAK';
+SET team = 'OAK'
+WHERE team = 'ATH';
 
 UPDATE fg_pitcher_data_staging
-SET team = 'ATH'
-WHERE team = 'OAK';
+SET team = 'OAK'
+WHERE team = 'ATH';
 
 # Should only have 'ATH'
 # SELECT *
