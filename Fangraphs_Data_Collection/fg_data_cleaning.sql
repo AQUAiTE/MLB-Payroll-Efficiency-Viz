@@ -22,26 +22,26 @@ INSERT fg_pitcher_data_staging
 SELECT *
 FROM fg_pitcher_data;
 
-# Standardize column names except for special types (WAR and xMLBAMID)
-# Adjust WAR to be 1 decimal
+# Standardize column names except for special types (fWAR and xMLBAMID)
+# Adjust fWAR to be 1 decimal
 ALTER TABLE fg_batter_data_staging
 RENAME COLUMN Season TO season,
 RENAME COLUMN team_name TO team,
 RENAME COLUMN PlayerName TO player,
-MODIFY COLUMN WAR DECIMAL(4, 1);
+CHANGE COLUMN WAR fWAR DECIMAL(4, 1);
 
 ALTER TABLE fg_pitcher_data_staging
 RENAME COLUMN Season TO season,
 RENAME COLUMN team_name TO team,
 RENAME COLUMN PlayerName TO player,
-MODIFY COLUMN WAR DECIMAL(4, 1);
+CHANGE COLUMN WAR fWAR DECIMAL(4, 1);
 
 # Check for duplicates
 WITH duplicate_batters AS
 (
 	SELECT *,
     ROW_NUMBER() OVER (
-		PARTITION BY season, team, xMLBAMID, player, position, WAR
+		PARTITION BY season, team, xMLBAMID, player, position, fWAR
     ) AS row_num
     FROM fg_batter_data_staging
 )
@@ -53,7 +53,7 @@ WITH duplicate_pitchers AS
 (
 	SELECT *,
     ROW_NUMBER() OVER (
-		PARTITION BY season, team, xMLBAMID, player, WAR
+		PARTITION BY season, team, xMLBAMID, player, fWAR
     ) AS row_num
     FROM fg_batter_data_staging
 )
