@@ -18,4 +18,26 @@ CREATE TABLE IF NOT EXISTS mlb_team_win_loss (
     GB DECIMAL(3, 1),
     season INT,
     PRIMARY KEY (Tm, season)
-)
+);
+
+DROP TABLE IF EXISTS bref_pitcher_data;
+CREATE TABLE IF NOT EXISTS bref_pitcher_data (
+	name_common VARCHAR(50),
+    mlb_ID INT,
+    year_ID INT,
+    team_ID VARCHAR(3),
+    lg_ID VARCHAR(2),
+    WAR DECIMAL(4, 1),
+    PRIMARY KEY (mlb_ID, year_ID, team_ID)
+);
+
+DROP TABLE IF EXISTS bref_batter_data;
+CREATE TABLE IF NOT EXISTS bref_batter_data (
+	name_common VARCHAR(50),
+    mlb_ID INT,
+    year_ID INT,
+    team_ID VARCHAR(3),
+    lg_ID VARCHAR(2),
+    WAR DECIMAL(4, 1),
+    PRIMARY KEY (mlb_ID, year_ID, team_ID)
+);
