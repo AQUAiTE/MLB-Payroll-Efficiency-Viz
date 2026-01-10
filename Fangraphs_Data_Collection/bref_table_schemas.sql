@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS mlb_team_win_loss (
     `W-L%` DECIMAL(4, 3),
     GB DECIMAL(3, 1),
     season INT,
+    division VARCHAR(10),
     PRIMARY KEY (Tm, season)
 );
 
