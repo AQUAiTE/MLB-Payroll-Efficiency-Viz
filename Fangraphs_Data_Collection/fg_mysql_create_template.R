@@ -4,21 +4,23 @@ library(RMariaDB)
 # Only data frames can be written as tables with dbWriteTable
 combined_batter_data_df <- as.data.frame(combined_batter_data)
 combined_pitcher_data_df <- as.data.frame(combined_pitcher_data)
+combined_team_batting_df <- as.data.frame(combined_team_batting)
+combined_team_pitching_df <- as.data.frame(combined_team_pitching)
 
 # Connect to the MySQL database
-# WARNING: This was a local only project so it's okay in this case but typically
-# NEVER directly use a password when connecting to a DB
-# Usually, you want to use a config or env var
+# Adjusted to use .Renviron for better security
 con <- dbConnect(
   RMariaDB::MariaDB(),
-  dbname = "mlb_salary_efficiency_data",
-  user = #MySQL User,
-  password = #MySQL Password
-  host = #MySQL Host
-  port = #MySQL Connection Port
+  dbname = Sys.getenv("MYSQL_DB"),
+  user = Sys.getenv("MYSQL_USER"),
+  password = Sys.getenv("MYSQL_PASS"),
+  host = Sys.getenv("MYSQL_HOST"),
+  port = Sys.getenv("MYSQL_PORT")
 )
 
-dbWriteTable(con, "fg_batter_data", combined_batter_data_df)
-dbWriteTable(con, "fg_pitcher_data", combined_pitcher_data_df)
+dbWriteTable(con, "fg_batter_data", combined_batter_data_df, overwrite=TRUE)
+dbWriteTable(con, "fg_pitcher_data", combined_pitcher_data_df, overwrite=TRUE)
+dbWriteTable(con, "fg_team_batting", combined_team_batting_df, overwrite=TRUE)
+dbWriteTable(con, "fg_team_pitching", combined_team_pitching_df, overwrite=TRUE)
 
 dbDisconnect(con)

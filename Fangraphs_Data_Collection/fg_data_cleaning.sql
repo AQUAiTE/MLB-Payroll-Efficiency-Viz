@@ -31,8 +31,11 @@ ALTER TABLE fg_batter_data_staging
 	RENAME COLUMN xMLBAMID TO MLBAMID,
 	RENAME COLUMN PlayerName TO player,
 	CHANGE COLUMN WAR fWAR DECIMAL(4, 1),
-    MODIFY COLUMN position VARCHAR(2), # No per-position WAR data, so we choose the primary position
 	ADD PRIMARY KEY (MLBAMID, season, team);
+
+# No per-position WAR data, so have players take their primary position
+UPDATE fg_batter_data_staging
+SET position = SUBSTRING_INDEX(position, '/', 1);
 
 ALTER TABLE fg_pitcher_data_staging
 	RENAME COLUMN Season TO season,

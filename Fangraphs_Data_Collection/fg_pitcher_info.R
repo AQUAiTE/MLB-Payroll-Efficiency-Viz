@@ -5,8 +5,9 @@ all_pitcher_data <- list()
 
 # Purpose: Retrieve the needed pitcher information from 2021-2025 for every team
 # Info Retrieved: Season, team_name, xMLBAMID, PlayerName, WAR
-# Notice: Retrieves all pitchers (both qualified or unqualified)
+# Notice: Retrieves pitchers with >= 20 IP
 # Notice: The record for most players used by a single team in a season is 70
+# so we can limit the pageitems to 100
 for (year in 2021:2025) {
   for (team in 1:30) {
     pitcher_info <- fg_pitcher_leaders(
