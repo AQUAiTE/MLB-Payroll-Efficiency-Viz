@@ -2,7 +2,7 @@
 SELECT * FROM fg_pitcher_data_staging LIMIT 10000;   -- 2853 Rows
 SELECT * FROM bref_pitcher_data_staging LIMIT 10000; -- 2853 Rows
 SELECT * FROM fg_batter_data_staging LIMIT 10000;    -- 2390 Rows
-SELECT * FROM bref_batter_data_staging LIMIT 10000;  -- 2383 Rows 
+SELECT * FROM bref_batter_data_staging LIMIT 10000;  -- 2383 Rows (Before Fixes) 
 
 # Hold on?
 # The batter tables don't return the same number of rows
@@ -62,7 +62,51 @@ LEFT JOIN bref_batter_data_staging t2
  AND t1.player   = t2.player
 WHERE t2.MLBAMID IS NULL;
 
-# After some investigation, I found that the common trait these players share is they have exactly 100 PAs
+# Now, just repeat for the pitchers!
+SELECT t1.*
+FROM fg_pitcher_data_staging t1
+LEFT JOIN bref_pitcher_data_staging t2
+  ON t1.season   = t2.season
+ AND t1.team     = t2.team
+ AND t1.MLBAMID  = t2.MLBAMID
+ AND t1.player   = t2.player
+WHERE t2.MLBAMID IS NULL;
+
+SELECT t2.*
+FROM bref_pitcher_data_staging t2
+LEFT JOIN fg_pitcher_data_staging t1
+  ON t1.season   = t2.season
+ AND t1.team     = t2.team
+ AND t1.MLBAMID  = t2.MLBAMID
+ AND t1.player   = t2.player
+WHERE t1.MLBAMID IS NULL;
+
+# The same problem happens again! This is the difference between 7 rows:
+# Fangraphs <-> Baseball-Reference
+# Ralph Garza Jr. <-> Ralph Garza
+# Brent Honeywell (2x) <-> Brent Honeywell Jr. (2x)
+# Glenn Otto Jr. (2x) <-> Glenn Otto (2x)
+# Jose E. Hernandez <-> Jose Hernandez
+# JD Hammer <-> J.D. Hammer
+# MLB.com matches the Fangraphs names again, so we'll take those
+UPDATE bref_pitcher_data_staging
+	SET player = CASE player
+    WHEN 'Ralph Garza' THEN 'Ralph Garza Jr.'
+    WHEN 'Brent Honeywell Jr.' THEN 'Brent Honeywell'
+    WHEN 'Glenn Otto' THEN 'Glenn Otto Jr.'
+    WHEN 'Jose Hernandez' THEN 'Jose E. Hernandez'
+    WHEN 'J.D. Hammer' THEN 'JD Hammer'
+    ELSE player
+END
+WHERE player IN (
+	'Ralph Garza',
+	'Brent Honeywell Jr.',
+	'Glenn Otto',
+	'Jose Hernandez',
+	'J.D. Hammer'
+);
+
+# After some investigation, I found that the common trait the batters share is they have exactly 100 PAs
 # After reviewing my code, I found that the qualifier I used for bref data was > 100 PAs instead of >= 100 PAs
 # Fixing it will alleviate this problem, and all we have to do is clean the name format again!
 # So while the rest of this file will now be unnecessary since those players will not appear,

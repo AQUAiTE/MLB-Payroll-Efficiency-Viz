@@ -1,9 +1,13 @@
 # Setup our staging tables
 DROP TABLE IF EXISTS bref_pitcher_data_staging;
 DROP TABLE IF EXISTS bref_batter_data_staging;
+DROP TABLE IF EXISTS bref_team_pitching_staging;
+DROP TABLE IF EXISTS bref_team_batting_staging;
 
 CREATE TABLE bref_pitcher_data_staging LIKE bref_pitcher_data;
 CREATE TABLE bref_batter_data_staging LIKE bref_batter_data;
+CREATE TABLE bref_team_pitching_staging LIKE bref_team_pitching;
+CREATE TABLE bref_team_batting_staging LIKE bref_team_batting;
 
 INSERT bref_pitcher_data_staging
 SELECT *
@@ -13,6 +17,15 @@ INSERT bref_batter_data_staging
 SELECT *
 FROM bref_batter_data;
 
+INSERT bref_team_pitching_staging
+SELECT *
+FROM bref_team_pitching;
+
+INSERT bref_team_batting_staging
+SELECT *
+FROM bref_team_batting;
+
+# Working on the individual data first
 # Standardize the columns to match the Fangraphs data
 ALTER TABLE bref_pitcher_data_staging
 	RENAME COLUMN year_ID TO season,
