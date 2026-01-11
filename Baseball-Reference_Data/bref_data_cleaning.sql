@@ -92,12 +92,44 @@ UPDATE bref_batter_data_staging
 SET team = 'OAK'
 WHERE team = 'ATH';
 
-# Should only have 'ATH'
-# SELECT *
-# FROM bref_batter_data_staging
-# WHERE team = 'ATH'
-# OR    team = 'OAK';
-# SELECT *
-# FROM bref_pitcher_data_staging
-# WHERE team = 'ATH'
-# OR    team = 'OAK';
+# Now working on the team tables
+ALTER TABLE bref_team_pitching_staging
+	RENAME COLUMN team_abbrev TO team,
+    RENAME COLUMN runs_allowed_per_game TO `Runs Allowed/Game`,
+    RENAME COLUMN earned_run_avg TO ERA,
+    RENAME COLUMN earned_run_avg_plus TO `ERA+`;
+
+ALTER TABLE bref_team_batting_staging
+	RENAME COLUMN team_abbrev to team,
+    RENAME COLUMN runs_per_game TO `Runs/Game`,
+    RENAME COLUMN onbase_plus_slugging TO OPS,
+    RENAME COLUMN onbase_plus_slugging_plus TO `OPS+`;
+    
+# Standardize ATH -> OAK
+UPDATE bref_team_pitching_staging
+SET team = 'OAK', team_name = 'Oakland Athletics'
+WHERE team = 'ATH';
+
+UPDATE bref_team_batting_staging
+SET team = 'OAK', team_name = 'Oakland Athletics'
+WHERE team = 'ATH';
+
+# Adjust the standings table
+DROP TABLE IF EXISTS mlb_standings_combined;
+CREATE TABLE mlb_standings_combined LIKE mlb_team_win_loss;
+INSERT mlb_standings_combined
+SELECT *
+FROM mlb_team_win_loss;
+
+ALTER TABLE mlb_standings_combined
+	RENAME COLUMN Tm TO team,
+	ADD COLUMN league VARCHAR(2);
+    
+UPDATE mlb_standings_combined
+SET team = 'Oakland Athletics'
+WHERE team = 'Athletics';
+
+# Check the finalized tables
+SELECT * FROM bref_team_pitching_staging;
+SELECT * FROM bref_team_batting_staging;
+SELECT * FROM mlb_standings_combined;
