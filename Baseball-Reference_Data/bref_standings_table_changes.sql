@@ -10,6 +10,10 @@ FROM mlb_team_win_loss;
 # We want to have the league and division placement in our standings
 ALTER TABLE mlb_standings_combined
 	RENAME COLUMN Tm TO team,
+    RENAME COLUMN W to wins,
+    RENAME COLUMN L to losses,
+    RENAME COLUMN `W-L%` TO win_pct,
+    RENAME COLUMN GB to gb,
 	ADD COLUMN league VARCHAR(2),
     ADD COLUMN divisional_placement BIGINT;
 
@@ -35,7 +39,7 @@ JOIN (
 	SELECT *,
     ROW_NUMBER() OVER (
 		PARTITION BY season, league, division
-        ORDER BY GB
+        ORDER BY gb
     ) AS division_placement
 	FROM mlb_standings_combined
 ) AS division_standings
@@ -43,4 +47,4 @@ ON standings.team = division_standings.team
 	AND standings.season = division_standings.season
 SET standings.divisional_placement = division_standings.division_placement;
 
-SELECT * FROM mlb_standings_combined ORDER BY season, division, league, GB;
+SELECT * FROM mlb_standings_combined ORDER BY season, division, league, gb;

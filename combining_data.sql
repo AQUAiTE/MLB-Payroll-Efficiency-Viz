@@ -26,6 +26,7 @@ CREATE TABLE combined_batter_data AS (
         fg.team,
         fg.MLBAMID,
         fg.player,
+        fg.position,
         fg.fWAR,
         bref.bWAR
     FROM fg_batter_data_staging AS fg
@@ -74,5 +75,3 @@ SELECT * FROM combined_batter_data LIMIT 3000;
 SELECT * FROM combined_team_pitching;
 SELECT * FROM combined_team_batting;
 SELECT * FROM mlb_standings_combined;
-
-# Finalizing our tables into marts
