@@ -69,7 +69,6 @@ CREATE TABLE combined_team_batting AS (
             AND bref.team = fg.team
 );
 
-
 SELECT * FROM combined_pitcher_data LIMIT 3000;
 SELECT * FROM combined_batter_data LIMIT 3000;
 SELECT * FROM combined_team_pitching;
