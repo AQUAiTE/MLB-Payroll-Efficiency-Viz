@@ -18,7 +18,6 @@ CREATE TABLE combined_pitcher_data AS (
 			AND fg.MLBAMID = bref.MLBAMID
 			AND fg.player = bref.player
 );
-SELECT * FROM combined_pitcher_data LIMIT 3000;
 
 DROP TABLE IF EXISTS combined_batter_data;
 CREATE TABLE combined_batter_data AS (
@@ -36,7 +35,6 @@ CREATE TABLE combined_batter_data AS (
 			AND fg.MLBAMID = bref.MLBAMID
 			AND fg.player = bref.player
 );
-SELECT * FROM combined_batter_data LIMIT 3000;
 
 DROP TABLE IF EXISTS combined_team_pitching;
 CREATE TABLE combined_team_pitching AS (
@@ -54,7 +52,6 @@ CREATE TABLE combined_team_pitching AS (
 			ON bref.season = fg.season
             AND bref.team = fg.team
 );
-SELECT * FROM combined_team_pitching;
 
 DROP TABLE IF EXISTS combined_team_batting;
 CREATE TABLE combined_team_batting AS (
@@ -71,21 +68,12 @@ CREATE TABLE combined_team_batting AS (
 			ON bref.season = fg.season
             AND bref.team = fg.team
 );
-SELECT 
-    *
-FROM
-    combined_team_batting;
 
-# Add the league to the standings table
-UPDATE mlb_standings_combined standings
-JOIN (
-	SELECT DISTINCT t2.team, t2.team_name, t1.league
-	FROM bref_batter_data_staging t1
-	JOIN bref_team_batting_staging t2
-		ON t1.team = t2.team
-) AS league_mapping
-	ON standings.team = league_mapping.team_name
-SET standings.league = league_mapping.league
-WHERE standings.league IS NULL;
 
+SELECT * FROM combined_pitcher_data LIMIT 3000;
+SELECT * FROM combined_batter_data LIMIT 3000;
+SELECT * FROM combined_team_pitching;
+SELECT * FROM combined_team_batting;
 SELECT * FROM mlb_standings_combined;
+
+# Finalizing our tables into marts
