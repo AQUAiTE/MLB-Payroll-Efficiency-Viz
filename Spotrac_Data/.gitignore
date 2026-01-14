@@ -1,2 +1,4 @@
 .spotrac_cache
 __pycache__/
+*.csv
+*.parquet

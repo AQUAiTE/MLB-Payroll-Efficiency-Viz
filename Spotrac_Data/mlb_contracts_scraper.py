@@ -201,6 +201,9 @@ def season_contracts(season: int) -> pd.DataFrame:
   data = pd.DataFrame(data=raw_data, columns=headings)
   data.dropna()
 
+  data.to_csv('{}_mlb_contracts.csv'.format(season), index=False)
+  data.to_parquet('{}_mlb_contracts.parquet'.format(season), index=False)
+
   return data
 
 
