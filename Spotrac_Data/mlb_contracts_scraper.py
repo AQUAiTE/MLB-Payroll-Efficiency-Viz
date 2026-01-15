@@ -205,10 +205,3 @@ def season_contracts(season: int) -> pd.DataFrame:
   data.to_parquet('{}_mlb_contracts.parquet'.format(season), index=False)
 
   return data
-
-
-def main():
-  print(season_contracts(2023))
-  
-if __name__ == '__main__':
-  main()
