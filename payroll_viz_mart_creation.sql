@@ -14,26 +14,36 @@ DROP TABLE IF EXISTS player_season_value_mart;
 CREATE TABLE player_season_value_mart AS (
 	(
 		SELECT
-			season,
-            team,
-            player,
+			pitchers.season,
+            pitchers.team,
+            pitchers.player,
             'pitcher' AS player_type,
-            NULL AS position,
-            fWAR,
-            bWAR
-		FROM combined_pitcher_data
+            'P' AS position,
+            pitchers.fWAR,
+            pitchers.bWAR,
+            contracts.salary
+		FROM combined_pitcher_data pitchers
+		JOIN mlb_contracts_staging contracts
+				ON pitchers.team = contracts.team
+                AND pitchers.season = contracts.season
+                AND pitchers.player = contracts.player
     )
     UNION ALL
     (
 		SELECT
-			season,
-            team,
-            player,
+			batters.season,
+            batters.team,
+            batters.player,
             'batter' AS batter_type,
-            position,
-            fWAR,
-            bWAR
-            FROM combined_batter_data
+            batters.position,
+            batters.fWAR,
+            batters.bWAR,
+            contracts.salary
+            FROM combined_batter_data batters
+            JOIN mlb_contracts_staging contracts
+				ON batters.team = contracts.team
+                AND batters.season = contracts.season
+                AND batters.player = contracts.player
     )
 );
 SELECT * FROM player_season_value_mart LIMIT 10000; -- Should be (and is) 5243 rows
@@ -74,3 +84,23 @@ CREATE TABLE team_season_summary_mart AS (
         AND war.team = pitch.team
 );
 SELECT * FROM team_season_summary_mart ORDER BY season, division, wins DESC; -- Should be 150 rows
+
+DROP TABLE IF EXISTS team_payroll_mart;
+CREATE TABLE team_payroll_mart AS (
+	SELECT
+		season,
+        team,
+        SUM(CASE WHEN category = 'Active' THEN salary ELSE 0 END) AS active_payroll,
+        SUM(CASE WHEN category = 'Injured' THEN salary ELSE 0 END) AS injured_payroll,
+        SUM(CASE WHEN category = 'Retained' THEN salary ELSE 0 END) AS retained_payroll,
+        SUM(CASE WHEN category = 'Deferred' THEN salary ELSE 0 END) AS deferred_payroll,
+        SUM(CASE WHEN category = 'Personal' THEN salary ELSE 0 END) AS personal_payroll,
+        SUM(CASE WHEN category = 'Suspended/Restricted' THEN salary ELSE 0 END) AS suspended_payroll,
+        SUM(CASE WHEN category = 'Reserve/Suspended' THEN salary ELSE 0 END) AS reserve_payroll,
+        SUM(CASE WHEN category = 'Dead' THEN salary ELSE 0 END) AS dead_payroll,
+        SUM(salary) AS total_payroll
+	FROM mlb_contracts_staging
+    GROUP BY season, team
+    ORDER BY season, team
+);
+SELECT * FROM team_payroll_mart; -- Should be 150 rows

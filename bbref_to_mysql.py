@@ -3,17 +3,24 @@ from dotenv import load_dotenv
 
 import mysql.connector as connector
 import pandas as pd
+import numpy as np
 
 load_dotenv()
 
-mlb_standings = pd.read_csv('mlb_standings_2021_2025.csv')
-team_batting = pd.read_csv('team_batting_2021_2025.csv')
-team_pitching = pd.read_csv('team_pitching_2021_2025.csv')
-bwar_pitcher_data = pd.read_csv('bwar_pitching_data.csv')
-bwar_batting_data = pd.read_csv('bwar_batting_data.csv')
+bref_directory = 'Baseball_Reference_Data'
+spotrac_directory = 'Spotrac_Data'
+
+mlb_standings = pd.read_csv('{}/mlb_standings_2021_2025.csv'.format(bref_directory))
+team_batting = pd.read_csv('{}/team_batting_2021_2025.csv'.format(bref_directory))
+team_pitching = pd.read_csv('{}/team_pitching_2021_2025.csv'.format(bref_directory))
+bwar_pitcher_data = pd.read_csv('{}/bwar_pitching_data.csv'.format(bref_directory))
+bwar_batting_data = pd.read_csv('{}/bwar_batting_data.csv'.format(bref_directory))
+contracts_data = pd.read_csv('{}/mlb_contracts_2021_2025.csv'.format(spotrac_directory))
 
 
 def insert_data(df: pd.DataFrame, table: str, primary_keys: list, conn, cursor):
+  df = df.replace({np.nan: None})
+
   columns = ', '.join([f'`{col}`' for col in df.columns])
   values = ', '.join(['%s'] * len(df.columns))
   update_condition = ', '.join([f'`{col}`=VALUES(`{col}`)' for col in df.columns if col not in primary_keys])
@@ -42,6 +49,7 @@ try:
     insert_data(team_pitching, 'bref_team_pitching', primary_keys=['season', 'team_abbrev'], conn=conn, cursor=cursor)
     insert_data(bwar_pitcher_data, 'bref_pitcher_data', primary_keys=['mlb_ID', 'year_ID', 'team_ID'], conn=conn, cursor=cursor)
     insert_data(bwar_batting_data, 'bref_batter_data', primary_keys=['mlb_ID', 'year_ID', 'team_ID'], conn=conn, cursor=cursor)
+    insert_data(contracts_data, 'mlb_contracts', primary_keys=['team', 'season', 'player'], conn=conn, cursor=cursor)
 
 
 except connector.Error as e:

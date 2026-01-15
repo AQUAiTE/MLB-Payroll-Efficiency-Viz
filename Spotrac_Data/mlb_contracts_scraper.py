@@ -148,9 +148,6 @@ def season_contracts(season: int) -> pd.DataFrame:
 
     for node in table_wrapper.children:
       # Stop iterating when we reach the summary to save time
-      if isinstance(node, Comment) and 'SUMMARY' in node:
-        break
-        
       if isinstance(node, Tag):
         classes = node['class']
 
